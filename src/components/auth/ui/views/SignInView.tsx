@@ -18,9 +18,11 @@ import {
 import { Alert, AlertTitle } from "@/components/ui/alert"; // 警告提示组件
 import { Button } from "@/components/ui/button"; // 按钮组件
 import Link from "next/link"; // Next.js链接组件
-import { useRouter } from "next/navigation"; // Next.js路由导航
+// Next.js路由导航
 import { useState } from "react"; // React状态钩子
 import { authClient } from "@/lib/auth-client"; // 认证客户端
+import { useRouter } from "next/navigation";
+import { FaGoogle, FaGithub } from "react-icons/fa";
 
 // 定义表单数据验证模式
 const formSchema = z.object({
@@ -30,9 +32,9 @@ const formSchema = z.object({
 
 // 登录页面组件
 const SignInView = () => {
-  const router = useRouter(); // 获取路由实例用于页面跳转
   const [error, setError] = useState<string | null>(null); // 错误信息状态
   const [pending, setPending] = useState(false); // 提交状态（是否正在提交）
+  const router = useRouter();
 
   // 初始化表单，使用Zod作为验证解析器
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,10 +59,31 @@ const SignInView = () => {
       {
         onSuccess: () => {
           setPending(false); // 提交完成，重置状态
-          router.push("/"); // 登录成功后跳转到首页
+          router.push("/");
         },
         onError: (error) => {
           setError(error.error.message); // 设置错误信息
+        },
+      }
+    );
+  };
+
+  const onSocial = async (provider: "github" | "google") => {
+    setError(null);
+    setPending(true);
+
+    await authClient.signIn.social(
+      {
+        provider: provider,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: () => {
+          setPending(false);
+        },
+        onError: (error) => {
+          setPending(false);
+          setError(error.error.message);
         },
       }
     );
@@ -238,8 +261,9 @@ const SignInView = () => {
                     type="button"
                     className="w-full"
                     disabled={pending}
+                    onClick={() => onSocial("google")}
                   >
-                    Google
+                    <FaGoogle />
                   </Button>
 
                   {/* GitHub登录按钮 - 轮廓样式，全宽，根据提交状态启用/禁用 */}
@@ -248,8 +272,9 @@ const SignInView = () => {
                     type="button"
                     disabled={pending}
                     className="w-full"
+                    onClick={() => onSocial("github")}
                   >
-                    Github
+                    <FaGithub />
                   </Button>
                 </div>
 
