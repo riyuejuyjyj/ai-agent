@@ -62,6 +62,7 @@ const SignInView = () => {
           router.push("/");
         },
         onError: (error) => {
+          setPending(false);
           setError(error.error.message); // 设置错误信息
         },
       }
@@ -303,7 +304,7 @@ const SignInView = () => {
           </Form>
 
           {/* 品牌展示区域 - 仅在md及以上屏幕显示，径向渐变背景 */}
-          <div className="bg-radial from-green-700 to-green-900 relative hidden md:flex flex-col items-center justify-center gap-y-4">
+          <div className="bg-radial from-sidebar-accent to-sidebar relative hidden md:flex flex-col items-center justify-center gap-y-4">
             {/* 
               bg-radial: 径向渐变背景
               from-green-700: 渐变起始颜色
