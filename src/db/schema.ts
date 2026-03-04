@@ -1,6 +1,6 @@
 import { pgTable, text, boolean, timestamp, index } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-
+import { nanoid } from "nanoid";
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -30,7 +30,7 @@ export const session = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
   },
-  (table) => [index("session_userId_idx").on(table.userId)]
+  (table) => [index("session_userId_idx").on(table.userId)],
 );
 
 export const account = pgTable(
@@ -54,7 +54,7 @@ export const account = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("account_userId_idx").on(table.userId)]
+  (table) => [index("account_userId_idx").on(table.userId)],
 );
 
 export const verification = pgTable(
@@ -70,7 +70,7 @@ export const verification = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("verification_identifier_idx").on(table.identifier)]
+  (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
 export const userRelations = relations(user, ({ many }) => ({
@@ -91,3 +91,16 @@ export const accountRelations = relations(account, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+export const agents = pgTable("agents", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  name: text("name").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  instructions: text("instructions").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
