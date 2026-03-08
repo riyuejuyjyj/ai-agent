@@ -93,7 +93,7 @@ const AgentForm = ({ onSuccess, onCancel, initialValues }: AgentFormProps) => {
        */
       onSuccess: () => {
         // 刷新 Agent 列表缓存
-        queryClient.invalidateQueries(trpc.agents.getMany.queryOptions());
+        queryClient.invalidateQueries(trpc.agents.getMany.queryOptions({}));
 
         // 如果是编辑模式，刷新当前 Agent 缓存
         if (initialValues?.id) {
