@@ -96,6 +96,37 @@ const AgentForm = ({ onSuccess, onCancel, initialValues }: AgentFormProps) => {
         queryClient.invalidateQueries(trpc.agents.getMany.queryOptions({}));
 
         // 如果是编辑模式，刷新当前 Agent 缓存
+
+        // 调用外部成功回调
+        onSuccess?.();
+
+        // 显示成功提示
+        toast.success("create successfully");
+      },
+      /**
+       * 错误回调
+       * @param error - 错误对象
+       */
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    }),
+  );
+
+  const updateAgent = useMutation(
+    trpc.agents.update.mutationOptions({
+      /**
+       * 成功回调
+       * - 刷新 Agent 列表查询
+       * - 如果是编辑模式，刷新单个 Agent 查询
+       * - 调用外部 onSuccess 回调
+       * - 显示成功提示
+       */
+      onSuccess: () => {
+        // 刷新 Agent 列表缓存
+        queryClient.invalidateQueries(trpc.agents.getMany.queryOptions({}));
+
+        // 如果是编辑模式，刷新当前 Agent 缓存
         if (initialValues?.id) {
           queryClient.invalidateQueries(
             trpc.agents.getOne.queryOptions({ id: initialValues.id }),
@@ -106,7 +137,7 @@ const AgentForm = ({ onSuccess, onCancel, initialValues }: AgentFormProps) => {
         onSuccess?.();
 
         // 显示成功提示
-        toast.success("create successfully");
+        toast.success("update successfully");
       },
       /**
        * 错误回调
@@ -155,7 +186,7 @@ const AgentForm = ({ onSuccess, onCancel, initialValues }: AgentFormProps) => {
   const onSubmit = (values: z.infer<typeof agentInsetSchema>) => {
     if (isEdit) {
       // TODO: 实现更新 Agent 逻辑
-      console.log("TODO:updateAgent");
+      updateAgent.mutate({ ...values, id: initialValues.id });
     } else {
       // 创建新 Agent
       createAgent.mutate(values);
