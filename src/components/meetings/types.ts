@@ -21,3 +21,6 @@ import { inferRouterOutputs } from "@trpc/server";
  * }
  */
 export type MeetingGetOne = inferRouterOutputs<AppRouter>["meeting"]["getOne"];
+
+export type MeetingMany =
+  inferRouterOutputs<AppRouter>["meeting"]["getMany"]["items"];
