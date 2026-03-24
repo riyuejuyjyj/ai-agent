@@ -4,9 +4,10 @@ import Image from "next/image";
 interface Props {
   title: string;
   description: string;
+  image?: string;
 }
 
-const EmptyState = ({ title, description }: Props) => {
+const EmptyState = ({ title, description, image = "/empty.svg" }: Props) => {
   return (
     <div className="flex flex-col items-center justify-center">
       <Image src={"/empty.svg"} alt="Empty" width={240} height={240} />
